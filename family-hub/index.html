@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Family Hub">
+<title>Family Hub</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --surface:#ffffff; --surface-2:#faf8f4; --border:#e7e2d9;
+    --text:#232019; --muted:#7c7568; --accent:#5a7d6f; --accent-soft:#e6efe9;
+    --pa:#3d6fb4; --pa-soft:#e5eef8; --pb:#c0693e; --pb-soft:#fbeadf;
+    --both:#8a6db0; --both-soft:#efe8f6; --danger:#c0483e; --shadow:0 1px 3px rgba(40,35,25,.08),0 6px 20px rgba(40,35,25,.05);
+    --sport:#b3841a; --sport-soft:#faf1de; --fun:#c14f82; --fun-soft:#f8e8ef;
+    --radius:16px;
+    --font:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  }
+  :root:not([data-theme="light"]){}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#18160f; --surface:#232019; --surface-2:#1e1b14; --border:#38332a;
+      --text:#f0ece2; --muted:#a49b8a; --accent:#7fb0a0; --accent-soft:#26332e;
+      --pa:#6fa0dd; --pa-soft:#1d2a3a; --pb:#e08a5c; --pb-soft:#33231a;
+      --both:#b199d6; --both-soft:#2b2338; --danger:#e07068;
+      --sport:#e0ac4a; --sport-soft:#3a2f18; --fun:#e08fb0; --fun-soft:#3a2530;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#18160f; --surface:#232019; --surface-2:#1e1b14; --border:#38332a;
+    --text:#f0ece2; --muted:#a49b8a; --accent:#7fb0a0; --accent-soft:#26332e;
+    --pa:#6fa0dd; --pa-soft:#1d2a3a; --pb:#e08a5c; --pb-soft:#33231a;
+    --both:#b199d6; --both-soft:#2b2338; --danger:#e07068;
+    --sport:#e0ac4a; --sport-soft:#3a2f18; --fun:#e08fb0; --fun-soft:#3a2530;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+    -webkit-font-smoothing:antialiased;line-height:1.45;padding-bottom:84px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 16px}
+  h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.01em}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:15px}
+  a{color:var(--accent)}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .head-in{display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:920px;margin:0 auto}
+  .logo{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;
+    display:grid;place-items:center;font-size:18px;flex:none}
+  .head-title{font-size:19px;font-weight:800}
+  .head-sub{font-size:12.5px;color:var(--muted);font-weight:600}
+  .theme-btn{margin-left:auto;background:var(--surface);border:1px solid var(--border);
+    width:38px;height:38px;border-radius:11px;font-size:16px;color:var(--text)}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px;margin:16px 0}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .grow{flex:1;min-width:0}
+
+  /* Today hero */
+  .hero{border-radius:var(--radius);padding:22px;color:#fff;position:relative;overflow:hidden;
+    box-shadow:var(--shadow)}
+  .hero small{opacity:.9;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+  .hero .big{font-size:30px;font-weight:800;margin:6px 0 2px;letter-spacing:-.02em}
+  .hero .hand{font-size:14px;font-weight:700;opacity:.95;margin-top:10px;
+    background:rgba(255,255,255,.18);display:inline-block;padding:6px 12px;border-radius:99px}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;
+    padding:4px 10px;border-radius:99px}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none}
+
+  /* Calendar */
+  .cal-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .cal-nav{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    width:36px;height:36px;border-radius:10px;font-size:16px}
+  .cal-title{font-size:17px;font-weight:800;flex:1;text-align:center}
+  .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .dow{text-align:center;font-size:11px;font-weight:800;color:var(--muted);padding:4px 0;text-transform:uppercase}
+  .cell{aspect-ratio:1/1;border-radius:11px;border:1.5px solid transparent;padding:5px 4px;
+    display:flex;flex-direction:column;gap:2px;cursor:pointer;position:relative;min-height:0;
+    transition:transform .08s}
+  .cell:active{transform:scale(.96)}
+  .cell.out{opacity:.32}
+  .cell .num{font-size:13px;font-weight:800;line-height:1}
+  .cell.today{border-color:var(--text)}
+  .cell .who{font-size:9px;font-weight:800;opacity:.85;margin-top:auto;text-transform:uppercase;letter-spacing:.02em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cell .marks{display:flex;gap:2px;flex-wrap:wrap}
+  .mk{width:5px;height:5px;border-radius:50%}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+
+  /* List items */
+  .item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--border)}
+  .item:first-child{border-top:none}
+  .item .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:16px;flex:none}
+  .item .t{font-weight:700;font-size:15px}
+  .item .m{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:1px}
+  .item .rt{margin-left:auto;text-align:right;flex:none;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+  .chk{width:24px;height:24px;border-radius:7px;border:2px solid var(--border);background:var(--surface-2);
+    flex:none;display:grid;place-items:center;font-size:14px;color:#fff}
+  .chk.on{background:var(--accent);border-color:var(--accent)}
+  .done .t{text-decoration:line-through;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);font-weight:600;font-size:14px;padding:22px 0}
+  .iconbtn{background:none;border:none;color:var(--muted);font-size:15px;padding:4px}
+
+  /* Buttons */
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:11px 16px;
+    font-weight:800;font-size:14.5px}
+  .btn.ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+  .btn.sm{padding:8px 12px;font-size:13px;border-radius:10px}
+  .btn.block{width:100%}
+  .btn.danger{background:var(--danger)}
+
+  /* Tabs */
+  nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;background:color-mix(in srgb,var(--surface) 94%,transparent);
+    backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  nav.tabs button{flex:1;background:none;border:none;color:var(--muted);font-weight:800;font-size:10.5px;
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:12px;text-transform:uppercase;letter-spacing:.02em}
+  nav.tabs button .ti{font-size:20px}
+  nav.tabs button.active{color:var(--accent)}
+  nav.tabs button.active .ti{transform:translateY(-1px)}
+
+  /* Forms & fields */
+  label.fld{display:block;margin:12px 0}
+  label.fld .lb{font-size:12.5px;font-weight:800;color:var(--muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.03em}
+  .in{width:100%;padding:11px 12px;border-radius:11px;border:1.5px solid var(--border);
+    background:var(--surface-2);color:var(--text)}
+  .in:focus{outline:none;border-color:var(--accent)}
+  textarea.in{resize:vertical;min-height:60px}
+
+  /* Modal */
+  .scrim{position:fixed;inset:0;background:rgba(20,16,10,.5);z-index:40;display:none;
+    align-items:flex-end;justify-content:center;padding:0}
+  .scrim.on{display:flex}
+  .sheet{background:var(--surface);width:100%;max-width:560px;border-radius:22px 22px 0 0;
+    padding:20px 20px calc(20px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto;
+    box-shadow:0 -8px 40px rgba(0,0,0,.25)}
+  .sheet h3{font-size:19px;margin-bottom:4px}
+  .sheet .seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+  .seg .opt{flex:1;min-width:70px;text-align:center;padding:10px;border-radius:11px;border:1.5px solid var(--border);
+    background:var(--surface-2);font-weight:800;font-size:13px;color:var(--text)}
+  .seg .opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .close{position:absolute}
+  @media(min-width:560px){.scrim{align-items:center}.sheet{border-radius:22px}}
+
+  .day-detail .pill{margin-bottom:10px}
+  .muted{color:var(--muted)}
+  .mini{font-size:12px;color:var(--muted);font-weight:600}
+  .banner{background:var(--accent-soft);color:var(--accent);border-radius:12px;padding:10px 12px;
+    font-size:13px;font-weight:700;margin-bottom:12px}
+  .hidden{display:none!important}
+  code{background:var(--surface-2);border:1px solid var(--border);padding:1px 5px;border-radius:5px;font-size:12.5px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+  <div class="head-in">
+    <div class="logo">🏡</div>
+    <div>
+      <div class="head-title" id="hdrTitle">Family Hub</div>
+      <div class="head-sub" id="hdrSub">2-2-3 co-parenting schedule</div>
+    </div>
+    <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- TODAY -->
+  <section id="view-today"></section>
+  <!-- CALENDAR -->
+  <section id="view-calendar" class="hidden"></section>
+  <!-- SCHOOL -->
+  <section id="view-school" class="hidden"></section>
+  <!-- SPORTS -->
+  <section id="view-sports" class="hidden"></section>
+  <!-- ACTIVITIES -->
+  <section id="view-activities" class="hidden"></section>
+  <!-- TODOS -->
+  <section id="view-todos" class="hidden"></section>
+  <!-- VOLUNTEERS -->
+  <section id="view-volunteers" class="hidden"></section>
+  <!-- SETTINGS -->
+  <section id="view-settings" class="hidden"></section>
+</div>
+
+<nav class="tabs">
+  <button data-tab="today" class="active"><span class="ti">🏠</span>Today</button>
+  <button data-tab="calendar"><span class="ti">📅</span>Calendar</button>
+  <button data-tab="school"><span class="ti">🎒</span>School</button>
+  <button data-tab="sports"><span class="ti">⚽</span>Sports</button>
+  <button data-tab="activities"><span class="ti">🎈</span>Activities</button>
+  <button data-tab="todos"><span class="ti">✓</span>To-dos</button>
+  <button data-tab="volunteers"><span class="ti">🙌</span>Hours</button>
+  <button data-tab="settings"><span class="ti">⚙️</span>Setup</button>
+</nav>
+
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+
+<script>
+(function(){
+  "use strict";
+  var pattern = [1,1,2,2,1,1,1,2,2,1,1,2,2,2]; // 2-2-3, blocks [2,2,3] alternating
+
+  /*TEACHER_NOTE_START*/
+var TEACHER_NOTE = {"week":"Sept 7–11","updated":"2026-09-11","from":"Mrs. Rivera (Kindergarten)","headline":"Letter T, greater than / less than, and a bird-beak science experiment 🐦","items":["📚 Return the library book on Monday to swap for a new one.","✏️ NEW: nightly fluency homework (under 5 min) starts this week — read the sheet aloud (letters, sounds, numbers, CVC words); return the practice log in Alex's folder Monday.","🔤 ELA: the letter T — sound, formation, plus sight words.","➗ Math: comparing numbers (greater than / less than).","🔬 Science: animal needs — how animals get food; did a hands-on bird-beak experiment."]};
+/*TEACHER_NOTE_END*/
+
+  /*PROGRESS_START*/
+var PROGRESS_UPDATES = [{"date":"2026-09-02","title":"Literacy assessment (STAR)","summary":"Alex scored in the ADVANCED early-literacy range — a strong foundation entering kindergarten. Mrs. Rivera will challenge him with decoding, word building, writing, and comprehension in small groups. At home: read together, talk about the stories, and encourage him to sound out new words."},{"date":"2026-09-01","title":"Settling into kindergarten","summary":"Alex is a curious learner who loves sharing fun facts, is very social and making new friends, and brings lots of enthusiasm — always eager to participate. He takes pride in his work and is a very capable learner. (Mrs. Rivera included photos of him settling in.)"}];
+/*PROGRESS_END*/
+
+  // ---------- state ----------
+  var defaults = {
+    child:"Alex",
+    school:"Lincoln Elementary School",
+    pa:{name:"Riley", home:"Mom's house", color:"pa"},
+    pb:{name:"Jordan", home:"Dad's house", color:"pb"},
+    anchor:"2026-09-14",  // date the cycle begins (Riley has Alex this Monday)
+    startParent:"a",      // who has the child on the anchor date
+    events:[],            // {id,title,date,time,type,notes,remind}
+    todos:[],             // {id,title,due,who,cat,done}
+    volunteers:[],        // {id,title,org,date,time,hours,who,status,notes}
+    seedVersion:0,
+    theme:null
+  };
+  // ---------- seed: Lincoln Elementary School 2026-27 calendar ----------
+  var SEED_VERSION = 4;
+  var SEED_TODOS = [
+    {id:"seed-mysteryreader", title:"Pick a Mystery Reader Friday (2:15–3:00) to read to Alex's class", due:"", who:"both", cat:"activity", done:false}
+  ];
+  function E(id,title,date,type,time,notes){ return {id:"sc-"+id,title:title,date:date,type:type,time:time||"",notes:notes||""}; }
+  var SEED_EVENTS = [
+    // Fall 2026
+    E("firstday","First day of school","2026-08-18","event","","Note: official calendar lists Aug 11 — confirm with school"),
+    E("pictureday","Picture Day","2026-08-21","event","",""),
+    E("labor","Labor Day — no school","2026-09-07","holiday","",""),
+    E("bbq","Back to School BBQ (tentative)","2026-09-12","event","",""),
+    E("mindaysep","Minimum Day — 12:30 dismissal","2026-09-14","early","12:30","On the official calendar; not on the preliminary list — confirm"),
+    E("festival1","Lincoln Fall Festival","2026-09-25","event","","This year's theme: \u201cUnder the Big Top.\u201d Food, games, music, community fun. Runs Sept 25-26."),
+    E("festival2","Lincoln Fall Festival — Day 2","2026-09-26","event","","Second day of the festival."),
+    E("progress","Progress reports (Trimester 1)","2026-09-30","deadline","",""),
+    E("oct2","Student Holiday / Teacher PL — no school","2026-10-02","holiday","",""),
+    E("conf1","Parent/Teacher Conferences — 12:30 dismissal","2026-10-05","early","12:30","Conference week Oct 5-9, 12:30 dismissal all week"),
+    E("conf2","Conferences — 12:30 dismissal","2026-10-06","early","12:30",""),
+    E("conf3","Conferences — 12:30 dismissal","2026-10-07","early","12:30",""),
+    E("conf4","Conferences — 12:30 dismissal","2026-10-08","early","12:30",""),
+    E("conf5","Conferences — 12:30 dismissal","2026-10-09","early","12:30",""),
+    E("oct12","School Holiday — no school","2026-10-12","holiday","",""),
+    E("oct30","Minimum Day — 12:30 dismissal","2026-10-30","early","12:30",""),
+    E("nov9","School Holiday — no school","2026-11-09","holiday","",""),
+    E("thx1","Thanksgiving Holiday — no school","2026-11-25","holiday","","Thanksgiving break Nov 25-27"),
+    E("thx2","Thanksgiving Holiday — no school","2026-11-26","holiday","",""),
+    E("thx3","Thanksgiving Holiday — no school","2026-11-27","holiday","",""),
+    E("dec14","12:30 dismissal — no extended care","2026-12-14","early","12:30",""),
+    E("dec18","12:30 dismissal — no extended care","2026-12-18","early","12:30",""),
+    E("xmas","Christmas Vacation — no school","2026-12-21","holiday","","Break runs Dec 21 - Jan 1"),
+    // Chess Club (Alex's after-school club) — Tuesdays 3:05-4:05, Room TBA
+    E("chess1","Chess Club club","2026-09-29","activity","15:05","Tue 3:05-4:05 PM at Lincoln, Room TBA. 6-week session ($159). No class 10/6."),
+    E("chess2","Chess Club club","2026-10-13","activity","15:05","Tue 3:05-4:05 PM, Room TBA"),
+    E("chess3","Chess Club club","2026-10-20","activity","15:05","Tue 3:05-4:05 PM, Room TBA"),
+    E("chess4","Chess Club club","2026-10-27","activity","15:05","Tue 3:05-4:05 PM, Room TBA"),
+    E("chess5","Chess Club club","2026-11-03","activity","15:05","Tue 3:05-4:05 PM, Room TBA"),
+    E("chess6","Chess Club club","2026-11-10","activity","15:05","Tue 3:05-4:05 PM, Room TBA"),
+    // Spring 2027
+    E("jan4","Student Holiday / Teacher PD — no school","2027-01-04","holiday","",""),
+    E("mlk","Martin Luther King Jr. Holiday — no school","2027-01-18","holiday","",""),
+    E("mass","Catholic Schools Mass 8:30 + Open House","2027-01-31","event","08:30",""),
+    E("feb5","12:30 dismissal — Teacher Appreciation","2027-02-05","early","12:30","No extended care"),
+    E("pres1","Presidents Day / Student Holiday — no school","2027-02-15","holiday","","Feb 15-16"),
+    E("pres2","Presidents Day / Student Holiday — no school","2027-02-16","holiday","",""),
+    E("holythu","Holy Thursday — 12:30 dismissal","2027-03-25","early","12:30","No extended care"),
+    E("goodfri","Good Friday Holiday — no school","2027-03-26","holiday","",""),
+    E("easter","Easter Vacation — no school","2027-03-30","holiday","","Break runs Mar 30 - Apr 2"),
+    E("apr5","Student Holiday / Teacher PD — no school","2027-04-05","holiday","",""),
+    E("apr23","Local Holiday — no school","2027-04-23","holiday","",""),
+    E("may3","May Crowning / Special Persons Day / Spring Sing","2027-05-03","event","12:30","12:30 dismissal, no extended care"),
+    E("memorial","Memorial Day Holiday — no school","2027-05-31","holiday","",""),
+    E("jun1","12:30 dismissal — no extended care","2027-06-01","early","12:30",""),
+    E("lastday","Last Day of School","2027-06-03","event","","Dismissal after prayer service")
+  ];
+
+  /*STATE_START*/
+var STATE = {"child":"Alex","school":"Lincoln Elementary School","pa":{"name":"Riley","home":"Mom's house","color":"pa"},"pb":{"name":"Jordan","home":"Dad's house","color":"pb"},"anchor":"2026-09-14","startParent":"a","events":[{"id":"sc-firstday","title":"First day of school","date":"2026-08-18","type":"event","time":"","notes":"Note: official calendar lists Aug 11 — confirm with school"},{"id":"sc-pictureday","title":"Picture Day","date":"2026-08-21","type":"event","time":"","notes":""},{"id":"sc-labor","title":"Labor Day — no school","date":"2026-09-07","type":"holiday","time":"","notes":""},{"id":"sc-bbq","title":"Back to School BBQ (tentative)","date":"2026-09-12","type":"event","time":"","notes":""},{"id":"sc-mindaysep","title":"Minimum Day — 12:30 dismissal","date":"2026-09-14","type":"early","time":"12:30","notes":"On the official calendar; not on the preliminary list — confirm"},{"id":"sc-festival1","title":"Lincoln Fall Festival","date":"2026-09-25","type":"event","time":"","notes":"This year's theme: \u201cUnder the Big Top.\u201d Food, games, music, community fun. Runs Sept 25-26."},{"id":"sc-festival2","title":"Lincoln Fall Festival — Day 2","date":"2026-09-26","type":"event","time":"","notes":"Second day of the festival."},{"id":"sc-progress","title":"Progress reports (Trimester 1)","date":"2026-09-30","type":"deadline","time":"","notes":""},{"id":"sc-oct2","title":"Student Holiday / Teacher PL — no school","date":"2026-10-02","type":"holiday","time":"","notes":""},{"id":"sc-conf1","title":"Parent/Teacher Conferences — 12:30 dismissal","date":"2026-10-05","type":"early","time":"12:30","notes":"Conference week Oct 5-9, 12:30 dismissal all week"},{"id":"sc-conf2","title":"Conferences — 12:30 dismissal","date":"2026-10-06","type":"early","time":"12:30","notes":""},{"id":"sc-conf3","title":"Conferences — 12:30 dismissal","date":"2026-10-07","type":"early","time":"12:30","notes":""},{"id":"sc-conf4","title":"Conferences — 12:30 dismissal","date":"2026-10-08","type":"early","time":"12:30","notes":""},{"id":"sc-conf5","title":"Conferences — 12:30 dismissal","date":"2026-10-09","type":"early","time":"12:30","notes":""},{"id":"sc-oct12","title":"School Holiday — no school","date":"2026-10-12","type":"holiday","time":"","notes":""},{"id":"sc-oct30","title":"Minimum Day — 12:30 dismissal","date":"2026-10-30","type":"early","time":"12:30","notes":""},{"id":"sc-nov9","title":"School Holiday — no school","date":"2026-11-09","type":"holiday","time":"","notes":""},{"id":"sc-thx1","title":"Thanksgiving Holiday — no school","date":"2026-11-25","type":"holiday","time":"","notes":"Thanksgiving break Nov 25-27"},{"id":"sc-thx2","title":"Thanksgiving Holiday — no school","date":"2026-11-26","type":"holiday","time":"","notes":""},{"id":"sc-thx3","title":"Thanksgiving Holiday — no school","date":"2026-11-27","type":"holiday","time":"","notes":""},{"id":"sc-dec14","title":"12:30 dismissal — no extended care","date":"2026-12-14","type":"early","time":"12:30","notes":""},{"id":"sc-dec18","title":"12:30 dismissal — no extended care","date":"2026-12-18","type":"early","time":"12:30","notes":""},{"id":"sc-xmas","title":"Christmas Vacation — no school","date":"2026-12-21","type":"holiday","time":"","notes":"Break runs Dec 21 - Jan 1"},{"id":"sc-chess1","title":"Chess Club club","date":"2026-09-29","type":"activity","time":"15:05","notes":"Tue 3:05-4:05 PM at Lincoln, Room TBA. 6-week session ($159). No class 10/6."},{"id":"sc-chess2","title":"Chess Club club","date":"2026-10-13","type":"activity","time":"15:05","notes":"Tue 3:05-4:05 PM, Room TBA"},{"id":"sc-chess3","title":"Chess Club club","date":"2026-10-20","type":"activity","time":"15:05","notes":"Tue 3:05-4:05 PM, Room TBA"},{"id":"sc-chess4","title":"Chess Club club","date":"2026-10-27","type":"activity","time":"15:05","notes":"Tue 3:05-4:05 PM, Room TBA"},{"id":"sc-chess5","title":"Chess Club club","date":"2026-11-03","type":"activity","time":"15:05","notes":"Tue 3:05-4:05 PM, Room TBA"},{"id":"sc-chess6","title":"Chess Club club","date":"2026-11-10","type":"activity","time":"15:05","notes":"Tue 3:05-4:05 PM, Room TBA"},{"id":"sc-jan4","title":"Student Holiday / Teacher PD — no school","date":"2027-01-04","type":"holiday","time":"","notes":""},{"id":"sc-mlk","title":"Martin Luther King Jr. Holiday — no school","date":"2027-01-18","type":"holiday","time":"","notes":""},{"id":"sc-mass","title":"Catholic Schools Mass 8:30 + Open House","date":"2027-01-31","type":"event","time":"08:30","notes":""},{"id":"sc-feb5","title":"12:30 dismissal — Teacher Appreciation","date":"2027-02-05","type":"early","time":"12:30","notes":"No extended care"},{"id":"sc-pres1","title":"Presidents Day / Student Holiday — no school","date":"2027-02-15","type":"holiday","time":"","notes":"Feb 15-16"},{"id":"sc-pres2","title":"Presidents Day / Student Holiday — no school","date":"2027-02-16","type":"holiday","time":"","notes":""},{"id":"sc-holythu","title":"Holy Thursday — 12:30 dismissal","date":"2027-03-25","type":"early","time":"12:30","notes":"No extended care"},{"id":"sc-goodfri","title":"Good Friday Holiday — no school","date":"2027-03-26","type":"holiday","time":"","notes":""},{"id":"sc-easter","title":"Easter Vacation — no school","date":"2027-03-30","type":"holiday","time":"","notes":"Break runs Mar 30 - Apr 2"},{"id":"sc-apr5","title":"Student Holiday / Teacher PD — no school","date":"2027-04-05","type":"holiday","time":"","notes":""},{"id":"sc-apr23","title":"Local Holiday — no school","date":"2027-04-23","type":"holiday","time":"","notes":""},{"id":"sc-may3","title":"May Crowning / Special Persons Day / Spring Sing","date":"2027-05-03","type":"event","time":"12:30","notes":"12:30 dismissal, no extended care"},{"id":"sc-memorial","title":"Memorial Day Holiday — no school","date":"2027-05-31","type":"holiday","time":"","notes":""},{"id":"sc-jun1","title":"12:30 dismissal — no extended care","date":"2027-06-01","type":"early","time":"12:30","notes":""},{"id":"sc-lastday","title":"Last Day of School","date":"2027-06-03","type":"event","time":"","notes":"Dismissal after prayer service"},{"id":"gcal-bjj0914","title":"Alex's BJJ practice","date":"2026-09-14","time":"16:00","type":"sports","notes":"430 Alex BJJ (weekly)"},{"id":"gcal-bjj0921","title":"Alex's BJJ practice","date":"2026-09-21","time":"16:00","type":"sports","notes":"430 Alex BJJ (weekly)"},{"id":"gcal-bjj0928","title":"Alex's BJJ practice","date":"2026-09-28","time":"16:00","type":"sports","notes":"430 Alex BJJ (weekly)"},{"id":"gcal-bjj1005","title":"Alex's BJJ practice","date":"2026-10-05","time":"16:00","type":"sports","notes":"430 Alex BJJ (weekly)"},{"id":"gcal-bjj1012","title":"Alex's BJJ practice","date":"2026-10-12","time":"16:00","type":"sports","notes":"430 Alex BJJ (weekly)"},{"id":"gcal-swim0918","title":"Alex's swim practice","date":"2026-09-18","time":"15:30","type":"sports","notes":"Weekly Friday practice"},{"id":"gcal-swim0925","title":"Alex's swim practice","date":"2026-09-25","time":"15:30","type":"sports","notes":"Weekly Friday practice"},{"id":"gcal-swim1002","title":"Alex's swim practice","date":"2026-10-02","time":"15:30","type":"sports","notes":"Weekly Friday practice"},{"id":"gcal-swim1009","title":"Alex's swim practice","date":"2026-10-09","time":"15:30","type":"sports","notes":"Weekly Friday practice"},{"id":"gcal-bjjtourney1003","title":"Alex's BJJ Tournament","date":"2026-10-03","time":"10:00","type":"sports","notes":"2 hours — check location and what to bring"},{"id":"gcal-bday-kamilla0920","title":"Maya's 6th Birthday Party","date":"2026-09-20","time":"11:00","type":"activity","notes":"Les Mundell Grove (Woodland Ave, behind the Community Center)"},{"id":"gcal-soccer0919","title":"Alex's soccer game (vs 6UB-07)","date":"2026-09-19","time":"15:00","type":"sports","notes":"AYSO 6U · Field B"},{"id":"gcal-soccer0926","title":"Alex's soccer game (vs 6UB-05)","date":"2026-09-26","time":"14:00","type":"sports","notes":"AYSO 6U · Field C"},{"id":"gcal-soccerpics0926","title":"Alex Soccer Pictures","date":"2026-09-26","time":"15:30","type":"sports","notes":"Team photo day"},{"id":"gcal-soccer1003","title":"Alex's soccer game (vs 6UB-03)","date":"2026-10-03","time":"13:00","type":"sports","notes":"AYSO 6U · Field C"},{"id":"gcal-soccer1010","title":"Alex's soccer game (vs 6UB-18)","date":"2026-10-10","time":"13:00","type":"sports","notes":"AYSO 6U · Field C"},{"id":"baseball-0915","title":"Alex's baseball practice","date":"2026-09-15","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-0920","title":"Alex's baseball game (vs A03 Falcons, home)","date":"2026-09-20","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-0922","title":"Alex's baseball practice","date":"2026-09-22","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-0927","title":"Alex's baseball game (@ A04 Hawks, away)","date":"2026-09-27","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-0929","title":"Alex's baseball practice","date":"2026-09-29","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1004","title":"Alex's baseball game (@ A02 Comets, away)","date":"2026-10-04","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1006","title":"Alex's baseball practice","date":"2026-10-06","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1011","title":"Alex's baseball game (@ A03 Falcons, away)","date":"2026-10-11","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1013","title":"Alex's baseball practice","date":"2026-10-13","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1018","title":"Alex's baseball game (vs A04 Hawks, home)","date":"2026-10-18","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1020","title":"Alex's baseball practice","date":"2026-10-20","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1025","title":"Alex's baseball game (vs A02 Comets, home)","date":"2026-10-25","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1027","title":"Alex's baseball practice","date":"2026-10-27","time":"17:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1101","title":"Alex's baseball game (vs A03 Falcons, home)","date":"2026-11-01","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1103","title":"Alex's baseball practice (earlier time)","date":"2026-11-03","time":"16:30","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1108","title":"Alex's baseball game (@ A04 Hawks, away)","date":"2026-11-08","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1110","title":"Alex's baseball practice (earlier time)","date":"2026-11-10","time":"16:30","type":"sports","notes":"Riverside Ballfield · schedule subject to change"},{"id":"baseball-1115","title":"Alex's baseball game (@ A02 Comets, away)","date":"2026-11-15","time":"09:00","type":"sports","notes":"Riverside Ballfield · schedule subject to change"}],"todos":[{"id":"seed-mysteryreader","title":"Pick a Mystery Reader Friday (2:15–3:00) to read to Alex's class","due":"","who":"both","cat":"activity","done":true},{"id":"hpmgsn9","title":"Monday Homework Completed","due":"2026-09-14","who":"a","cat":"homework","done":true}],"volunteers":[],"seedVersion":4,"theme":"dark"};
+/*STATE_END*/
+
+  var S = Object.assign({}, JSON.parse(JSON.stringify(defaults)), STATE);
+  try{
+    var _saved = localStorage.getItem("familyHub.state");
+    if(_saved) S = Object.assign({}, JSON.parse(JSON.stringify(defaults)), JSON.parse(_saved));
+  }catch(e){}
+  seed();
+  var eventsByDate = {}, todosByDate = {};
+  function rebuildIndexes(){
+    eventsByDate = {}; S.events.forEach(function(e){ (eventsByDate[e.date] = eventsByDate[e.date] || []).push(e); });
+    todosByDate = {}; S.todos.forEach(function(t){ if(t.due){ (todosByDate[t.due] = todosByDate[t.due] || []).push(t); } });
+  }
+  rebuildIndexes();
+  function seed(){
+    if(S.seedVersion===SEED_VERSION) return;
+    // canonical family config (applied once when this version rolls out)
+    S.child="Alex"; S.school="Lincoln Elementary School";
+    S.pa.name="Riley"; S.pa.home="Mom's house";
+    S.pb.name="Jordan"; S.pb.home="Dad's house";
+    S.anchor="2026-09-14"; S.startParent="a";
+    var have={}; S.events.forEach(function(e){ have[e.id]=1; });
+    SEED_EVENTS.forEach(function(e){ if(!have[e.id]) S.events.push(JSON.parse(JSON.stringify(e))); });
+    var haveT={}; S.todos.forEach(function(t){ haveT[t.id]=1; });
+    SEED_TODOS.forEach(function(t){ if(!haveT[t.id]) S.todos.push(JSON.parse(JSON.stringify(t))); });
+    S.seedVersion=SEED_VERSION;
+    // NOTE: deliberately not persisted here — a page must never publish on
+    // load, only in response to a viewer action. This runs again (harmlessly)
+    // on every load until the first real edit persists the seeded S.
+  }
+
+  function uid(){ return Math.random().toString(36).slice(2,9); }
+
+  // ---------- persistence: plain localStorage (this is a standalone demo,
+  // not running inside the Claude artifact runtime) ----------
+  var STORAGE_KEY = "familyHub.state";
+  function save(){
+    rebuildIndexes();
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){}
+  }
+
+  // ---------- dates ----------
+  function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function parse(s){ var p=s.split("-"); return new Date(+p[0],+p[1]-1,+p[2]); }
+  function today(){ var d=new Date(); return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+  function addDays(d,n){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n); }
+  function diffDays(a,b){ return Math.round((a-b)/86400000); }
+  var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  function fmt(d){ return DOW[d.getDay()]+", "+MON[d.getMonth()].slice(0,3)+" "+d.getDate(); }
+
+  // who has child on date d -> 'a' or 'b'
+  function whoOn(d){
+    var idx = ((diffDays(d, parse(S.anchor)) % 14) + 14) % 14;
+    var p = pattern[idx]; // 1 = startParent, 2 = other
+    var start = S.startParent, other = start==="a"?"b":"a";
+    return p===1 ? start : other;
+  }
+  function parentOf(key){ return key==="a"?S.pa:S.pb; }
+  function colorVar(key){ return key==="a"?parentOf("a").color:parentOf("b").color; }
+  // next handoff strictly after `from` (first day custody flips)
+  function nextHandoff(from){
+    var cur = whoOn(from);
+    for(var i=1;i<=14;i++){ var d=addDays(from,i); if(whoOn(d)!==cur) return {date:d, to:whoOn(d)}; }
+    return null;
+  }
+
+  // ---------- helpers ----------
+  function colStyle(key){ var c=colorVar(key); return "background:var(--"+c+"-soft);color:var(--"+c+")"; }
+  function esc(s){ return (s||"").replace(/[&<>"]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m];}); }
+  var TYPES={holiday:{i:"🏖️",l:"No school"},early:{i:"⏰",l:"Early release"},event:{i:"🎉",l:"Event"},deadline:{i:"📌",l:"Deadline"},sports:{i:"⚽",l:"Sports"},activity:{i:"🎈",l:"Activity"}};
+  var CATS={form:"📝",appt:"🩺",supplies:"🎒",activity:"⚽",homework:"📖",pack:"🧳",other:"•"};
+
+  // Recurring Lincoln items (mirrors the school Google Calendar)
+  var RECURRING=[
+    {id:"mon130", title:"1:30 early dismissal", type:"early", time:"13:30", weekdays:[1], start:"2026-08-18", until:"2027-06-03", note:"Weekly Monday early dismissal (1:30)"},
+    {id:"peuni", title:"PE uniform day", type:"activity", time:"", weekdays:[2,4], start:"2026-08-18", until:"2027-06-03", note:"Alex wears PE uniform"}
+  ];
+  var BREAKS=[["2026-11-25","2026-11-27"],["2026-12-21","2027-01-01"],["2027-02-15","2027-02-16"],["2027-03-30","2027-04-02"]];
+  function inBreak(diso){ return BREAKS.some(function(b){ return diso>=b[0] && diso<=b[1]; }); }
+  function genRecurringFor(diso){
+    var out=[]; if(inBreak(diso)) return out;
+    var dow=parse(diso).getDay();
+    var dayEv=eventsByDate[diso]||[];
+    if(dayEv.some(function(e){return e.type==="holiday";})) return out; // no school
+    var hasEarly=dayEv.some(function(e){return e.type==="early";});
+    RECURRING.forEach(function(r){
+      if(r.weekdays.indexOf(dow)<0) return;
+      if(diso<r.start || diso>r.until) return;
+      if(r.id==="mon130" && hasEarly) return; // a specific 12:30 minimum day overrides the weekly 1:30
+      out.push({id:"rec-"+r.id+"-"+diso,title:r.title,date:diso,time:r.time,type:r.type,notes:r.note,synthetic:true});
+    });
+    return out;
+  }
+  function eventsOn(diso){ return (eventsByDate[diso]||[]).concat(genRecurringFor(diso)).sort(function(a,b){return (a.time||"").localeCompare(b.time||"");}); }
+  function todosOn(diso){ return todosByDate[diso]||[]; }
+
+  // ---------- rendering ----------
+  var cur = today(); var calMonth = new Date(cur.getFullYear(), cur.getMonth(), 1);
+
+  function renderHeader(){
+    document.getElementById("hdrTitle").textContent = S.child==="our child" ? "Family Hub" : titleCase(S.child)+"'s Hub";
+    document.getElementById("hdrSub").textContent = parentOf("a").name+" · "+parentOf("b").name+" — 2-2-3";
+  }
+  function titleCase(s){ return s.replace(/\b\w/g,function(c){return c.toUpperCase();}); }
+
+  function teacherItemsHTML(){
+    return (TEACHER_NOTE.items||[]).map(function(it){ return '<div style="display:flex;gap:8px;padding:5px 0;font-size:13.5px;font-weight:600"><span>'+esc(it)+'</span></div>'; }).join('');
+  }
+  function teacherBannerHTML(){
+    if(!TEACHER_NOTE || !TEACHER_NOTE.week) return '';
+    return '<div class="card teacher" style="border-color:var(--accent);background:var(--accent-soft)">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
+      '<span style="font-size:20px">🍎</span>'+
+      '<div style="flex:1"><div style="font-weight:800;font-size:15px;color:var(--accent)">This Week in K — '+esc(TEACHER_NOTE.from||"Mrs. Rivera")+'</div>'+
+      '<div class="mini">Week of '+esc(TEACHER_NOTE.week)+'</div></div>'+
+      '<button class="iconbtn" style="color:var(--accent)" onclick="FH.showTeacher()">Open ▸</button></div>'+
+      (TEACHER_NOTE.headline?'<div style="font-size:14px;font-weight:700;margin-bottom:6px">'+esc(TEACHER_NOTE.headline)+'</div>':'')+
+      teacherItemsHTML()+
+      '</div>';
+  }
+  function openTeacherModal(){
+    var h='<h3>🍎 This Week in K</h3><div class="mini" style="margin-top:2px">'+esc(TEACHER_NOTE.from||"Mrs. Rivera")+' · Week of '+esc(TEACHER_NOTE.week)+'</div><div style="height:12px"></div>';
+    if(TEACHER_NOTE.headline) h+='<div style="font-weight:700;font-size:15px;margin-bottom:10px">'+esc(TEACHER_NOTE.headline)+'</div>';
+    h+='<div>'+teacherItemsHTML()+'</div>';
+    h+='<div style="height:14px"></div><button class="btn block" onclick="FH.closeTeacher()">Got it</button>';
+    openSheet(h);
+  }
+
+  function progressCardHTML(){
+    if(!PROGRESS_UPDATES || !PROGRESS_UPDATES.length) return '';
+    var u=PROGRESS_UPDATES[0];
+    return '<div class="card" style="border-color:var(--pa)">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
+      '<span style="font-size:20px">📈</span>'+
+      '<div style="flex:1"><div style="font-weight:800;font-size:15px;color:var(--pa)">Alex’s progress — latest</div>'+
+      '<div class="mini">'+esc(fmt(parse(u.date)))+' · '+esc(u.title)+'</div></div>'+
+      (PROGRESS_UPDATES.length>1?'<button class="iconbtn" style="color:var(--pa)" onclick="FH.showProgress()">All '+PROGRESS_UPDATES.length+' ▸</button>':'')+
+      '</div>'+
+      '<div style="font-size:13.5px;font-weight:600">'+esc(u.summary)+'</div></div>';
+  }
+  function progressListHTML(){
+    return PROGRESS_UPDATES.map(function(u){
+      return '<div class="item" style="display:block"><div class="t">'+esc(u.title)+'</div>'+
+        '<div class="mini" style="margin:2px 0 4px">'+esc(fmt(parse(u.date)))+' · Mrs. Rivera</div>'+
+        '<div style="font-size:13.5px;font-weight:600">'+esc(u.summary)+'</div></div>';
+    }).join('');
+  }
+  function openProgressModal(){
+    openSheet('<h3>📈 Alex’s Progress</h3><div class="mini" style="margin-top:2px">Updates from Mrs. Rivera</div><div style="height:12px"></div>'+
+      progressListHTML()+'<div style="height:14px"></div><button class="btn block" onclick="FH.closeSheet()">Close</button>');
+  }
+
+  // ---------- homework check-in (3pm reminder) ----------
+  function todaysHomework(){ return S.todos.filter(function(t){ return t.cat==="homework" && t.due===iso(cur); }); }
+  function renderHomeworkModal(){
+    var hw = todaysHomework();
+    var h = '<h3>📖 Homework check-in</h3>';
+    if(hw.length===0){
+      openSheet(h+'<div class="empty">No homework logged for today. Add some from the To-dos tab (category 📖 Homework) and it\'ll show up here.</div><div style="height:14px"></div><button class="btn block" onclick="FH.closeSheet()">Close</button>');
+      return;
+    }
+    var openCount = hw.filter(function(t){return !t.done;}).length;
+    h += '<div class="mini" style="margin-top:2px">'+(openCount===0?"All done! 🎉":openCount+" left to check off")+'</div><div style="height:12px"></div>';
+    hw.forEach(function(t){
+      h += '<div class="item '+(t.done?"done":"")+'"><div class="chk '+(t.done?"on":"")+'" onclick="FH.toggleHomeworkTodo(\''+t.id+'\')">'+(t.done?"✓":"")+'</div><div class="grow"><div class="t">'+esc(t.title)+'</div></div></div>';
+    });
+    h += '<div style="height:14px"></div><button class="btn block" onclick="FH.closeSheet()">Close</button>';
+    openSheet(h);
+  }
+  function maybeNotify(n){
+    try{
+      if(window.Notification && Notification.permission==="granted"){
+        new Notification("📖 Homework check-in", {body: n+" item"+(n>1?"s":"")+" due today for "+S.child+" — open Family Hub to check them off."});
+      }
+    }catch(e){}
+  }
+  function checkHomeworkAlert(){
+    try{
+      if(new Date().getHours() < 15) return; // only from 3pm on
+      var todayIso = iso(today());
+      if(localStorage.getItem("familyHub.hwAlertSeen")===todayIso) return; // already popped up today
+      var due = todaysHomework().filter(function(t){return !t.done;});
+      if(due.length===0) return; // nothing yet — keep checking in case something's added later today
+      localStorage.setItem("familyHub.hwAlertSeen", todayIso);
+      renderHomeworkModal();
+      maybeNotify(due.length);
+    }catch(e){}
+  }
+
+  function renderToday(){
+    var w = whoOn(cur), p = parentOf(w), c = colorVar(w);
+    var ho = nextHandoff(cur);
+    var handTxt="";
+    if(ho){
+      var dd = diffDays(ho.date,cur);
+      var when = dd===0?"today":dd===1?"tomorrow":"in "+dd+" days";
+      handTxt = "🔄 Next handoff "+when+" ("+fmt(ho.date)+") → "+parentOf(ho.to).name;
+    }
+    var evT = eventsOn(iso(cur)), tdOpen = S.todos.filter(function(t){return !t.done;});
+    // upcoming events next 10 days
+    var up=[]; for(var i=0;i<10;i++){ var d=addDays(cur,i); eventsOn(iso(d)).forEach(function(e){ up.push({e:e,d:d}); }); }
+    var overdue = tdOpen.filter(function(t){return t.due && parse(t.due)<cur;});
+    var dueSoon = tdOpen.filter(function(t){return t.due && diffDays(parse(t.due),cur)>=0 && diffDays(parse(t.due),cur)<=7;});
+
+    var h="";
+    h+='<div class="hero" style="background:linear-gradient(135deg,var(--'+c+'),color-mix(in srgb,var(--'+c+') 70%,#000 8%))">';
+    h+='<small>'+fmt(cur)+' · Today</small>';
+    h+='<div class="big">'+esc(p.name)+' has '+esc(S.child)+'</div>';
+    h+='<div style="font-weight:700;opacity:.92">at '+esc(p.home)+'</div>';
+    if(handTxt) h+='<div class="hand">'+handTxt+'</div>';
+    h+='</div>';
+
+    // Teacher weekly note banner
+    h+=teacherBannerHTML();
+    // Alex's latest progress update
+    h+=progressCardHTML();
+
+    // Today's schedule
+    h+='<div class="card"><h2>Today at a glance</h2>';
+    if(evT.length===0 && overdue.length===0 && dueSoon.length===0){
+      h+='<div class="empty">Nothing scheduled. Enjoy the day 🌤️</div>';
+    }else{
+      evT.forEach(function(e){ h+=itemEvent(e); });
+      overdue.forEach(function(t){ h+=itemTodo(t,true); });
+      dueSoon.filter(function(t){return t.due===iso(cur);}).forEach(function(t){ h+=itemTodo(t,false); });
+    }
+    h+='</div>';
+
+    // Upcoming
+    h+='<div class="card"><h2>Coming up (next 10 days)</h2>';
+    if(up.length===0) h+='<div class="empty">No upcoming school events.</div>';
+    else up.slice(0,8).forEach(function(x){ h+=itemEvent(x.e,x.d); });
+    h+='</div>';
+
+    // Open to-dos
+    h+='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">Open to-dos</h2>'+
+       '<button class="btn sm" onclick="FH.addTodo()">+ Add</button></div><div style="height:10px"></div>';
+    if(tdOpen.length===0) h+='<div class="empty">All caught up ✓</div>';
+    else tdOpen.slice(0,6).forEach(function(t){ h+=itemTodo(t, t.due&&parse(t.due)<cur); });
+    h+='</div>';
+
+    // Upcoming volunteer commitments (next 14 days)
+    var volUp=S.volunteers.filter(function(v){ return v.status!=="completed" && v.date && diffDays(parse(v.date),cur)>=0 && diffDays(parse(v.date),cur)<=14; })
+      .sort(function(a,b){ return a.date.localeCompare(b.date); });
+    if(volUp.length){
+      h+='<div class="card"><h2>Volunteer commitments</h2>';
+      volUp.forEach(function(v){ h+=itemVol(v); });
+      h+='</div>';
+    }
+
+    document.getElementById("view-today").innerHTML=h;
+  }
+
+  function itemEvent(e,d){
+    var ty=TYPES[e.type]||{i:"📅",l:e.type};
+    var when = d?fmt(d)+(e.time?" · "+e.time:""):(e.time?e.time:ty.l);
+    var click = e.synthetic?'':' onclick="FH.editEvent(\''+e.id+'\')"';
+    var tag = e.synthetic?' <span class="mini">(recurring)</span>':'';
+    return '<div class="item"'+click+'><div class="ic" style="'+colStyleType(e.type)+'">'+ty.i+'</div>'+
+      '<div class="grow"><div class="t">'+esc(e.title)+tag+'</div><div class="m">'+esc(when)+' · '+ty.l+'</div></div></div>';
+  }
+  function colStyleType(t){ var map={holiday:"both",early:"pb",event:"accent",deadline:"pb",sports:"sport",activity:"fun"}; var c=map[t]||"accent"; return "background:var(--"+c+"-soft);color:var(--"+c+")"; }
+
+  function itemTodo(t,overdue){
+    var who = t.who==="both"?"Both":t.who==="a"?parentOf("a").name:t.who==="b"?parentOf("b").name:"";
+    var wc = t.who==="both"?"both":t.who==="a"?colorVar("a"):t.who==="b"?colorVar("b"):"accent";
+    var due = t.due?(iso(cur)===t.due?"Today":fmt(parse(t.due))):"";
+    var meta=[]; if(who) meta.push(who); if(due) meta.push((overdue?"⚠️ ":"")+due);
+    return '<div class="item '+(t.done?"done":"")+'">'+
+      '<div class="chk '+(t.done?"on":"")+'" onclick="FH.toggleTodo(\''+t.id+'\')">'+(t.done?"✓":"")+'</div>'+
+      '<div class="grow" onclick="FH.editTodo(\''+t.id+'\')"><div class="t">'+(CATS[t.cat]||"")+' '+esc(t.title)+'</div>'+
+      (meta.length?'<div class="m">'+esc(meta.join(" · "))+'</div>':'')+'</div>'+
+      (who?'<div class="rt"><span class="pill" style="'+ (t.who==="both"?"background:var(--both-soft);color:var(--both)": (t.who==="a"?colStyle("a"):colStyle("b"))) +'"><span class="dot" style="background:var(--'+wc+')"></span>'+esc(who)+'</span></div>':'')+
+      '</div>';
+  }
+
+  function renderCalendar(){
+    var y=calMonth.getFullYear(), m=calMonth.getMonth();
+    var first=new Date(y,m,1), startDow=first.getDay();
+    var gridStart=addDays(first,-startDow);
+    var h='<div class="card">';
+    h+='<div class="cal-head"><button class="cal-nav" onclick="FH.calNav(-1)">‹</button>'+
+       '<div class="cal-title">'+MON[m]+' '+y+'</div>'+
+       '<button class="cal-nav" onclick="FH.calNav(1)">›</button>'+
+       '<button class="cal-nav" onclick="FH.calToday()" title="Jump to today">•</button></div>';
+    h+='<div class="grid7">';
+    ["S","M","T","W","T","F","S"].forEach(function(d){ h+='<div class="dow">'+d+'</div>'; });
+    for(var i=0;i<42;i++){
+      var d=addDays(gridStart,i), di=iso(d), w=whoOn(d), c=colorVar(w), p=parentOf(w);
+      var out = d.getMonth()!==m;
+      var isToday = di===iso(cur);
+      var evs=eventsOn(di), tds=todosOn(di).filter(function(t){return !t.done;});
+      var marks="";
+      evs.slice(0,3).forEach(function(){ marks+='<span class="mk" style="background:var(--accent)"></span>'; });
+      if(tds.length) marks+='<span class="mk" style="background:var(--danger)"></span>';
+      h+='<div class="cell '+(out?"out":"")+' '+(isToday?"today":"")+'" style="background:var(--'+c+'-soft)" onclick="FH.openDay(\''+di+'\')">'+
+         '<div class="num" style="color:var(--'+c+')">'+d.getDate()+'</div>'+
+         '<div class="marks">'+marks+'</div>'+
+         '<div class="who" style="color:var(--'+c+')">'+esc(p.name.split(" ")[0])+'</div>'+
+         '</div>';
+      if(i>=34 && d.getMonth()!==m && addDays(gridStart,i+1).getMonth()!==m && (i+1)%7===0) break;
+    }
+    h+='</div>';
+    h+='<div class="legend">'+
+       '<span><span class="dot" style="background:var(--'+colorVar("a")+')"></span>'+esc(parentOf("a").name)+'</span>'+
+       '<span><span class="dot" style="background:var(--'+colorVar("b")+')"></span>'+esc(parentOf("b").name)+'</span>'+
+       '<span><span class="dot" style="background:var(--accent)"></span>School event</span>'+
+       '<span><span class="dot" style="background:var(--danger)"></span>To-do due</span></div>';
+    h+='</div>';
+    document.getElementById("view-calendar").innerHTML=h;
+  }
+
+  function eventsByTypeInRange(type,daysAhead){
+    var out=[], seen={};
+    S.events.filter(function(e){return e.type===type;}).forEach(function(e){ out.push(e); seen[e.id]=1; });
+    for(var i=-14;i<daysAhead;i++){
+      genRecurringFor(iso(addDays(cur,i))).filter(function(e){return e.type===type;}).forEach(function(e){ if(!seen[e.id]){ out.push(e); seen[e.id]=1; } });
+    }
+    return out;
+  }
+
+  function renderSports(){
+    var mine=eventsByTypeInRange("sports",60);
+    var upcoming=mine.filter(function(e){return parse(e.date)>=cur;}).sort(function(a,b){return a.date.localeCompare(b.date)||(a.time||"").localeCompare(b.time||"");});
+    var past=mine.filter(function(e){return parse(e.date)<cur;}).sort(function(a,b){return b.date.localeCompare(a.date);});
+    var h='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">Sports</h2>'+
+      '<button class="btn sm" onclick="FH.addSports()">+ Add</button></div><div style="height:8px"></div>';
+    if(upcoming.length===0) h+='<div class="empty">No practices, games, or tournaments yet. Add them here, or they\'ll show up automatically from the shared calendar via the morning sync.</div>';
+    else upcoming.forEach(function(e){ h+=itemEvent(e,parse(e.date)); });
+    h+='</div>';
+    if(past.length){ h+='<div class="card"><h2>Past</h2>'; past.slice(0,8).forEach(function(e){ h+=itemEvent(e,parse(e.date)); }); h+='</div>'; }
+    document.getElementById("view-sports").innerHTML=h;
+  }
+
+  function renderActivities(){
+    var mine=eventsByTypeInRange("activity",60);
+    var upcoming=mine.filter(function(e){return parse(e.date)>=cur;}).sort(function(a,b){return a.date.localeCompare(b.date)||(a.time||"").localeCompare(b.time||"");});
+    var past=mine.filter(function(e){return parse(e.date)<cur;}).sort(function(a,b){return b.date.localeCompare(a.date);});
+    var h='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">Activities</h2>'+
+      '<button class="btn sm" onclick="FH.addActivity()">+ Add</button></div><div style="height:8px"></div>';
+    if(upcoming.length===0) h+='<div class="empty">No birthday parties, playdates, or meetups yet. Add them here, or they\'ll show up automatically from the shared calendar via the morning sync.</div>';
+    else upcoming.forEach(function(e){ h+=itemEvent(e,parse(e.date)); });
+    h+='</div>';
+    if(past.length){ h+='<div class="card"><h2>Past</h2>'; past.slice(0,8).forEach(function(e){ h+=itemEvent(e,parse(e.date)); }); h+='</div>'; }
+    document.getElementById("view-activities").innerHTML=h;
+  }
+
+  function renderSchool(){
+    var upcoming=S.events.filter(function(e){return parse(e.date)>=cur;}).sort(function(a,b){return a.date.localeCompare(b.date)||(a.time||"").localeCompare(b.time||"");});
+    var past=S.events.filter(function(e){return parse(e.date)<cur;}).sort(function(a,b){return b.date.localeCompare(a.date);});
+    var h='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">'+esc(S.school)+' calendar</h2>'+
+      '<button class="btn sm" onclick="FH.addEvent()">+ Event</button></div><div style="height:8px"></div>';
+    if(upcoming.length===0) h+='<div class="empty">No upcoming events. Add school holidays, early releases, and deadlines here — or connect your school calendar (see Setup).</div>';
+    else upcoming.forEach(function(e){ h+=itemEvent(e,parse(e.date)); });
+    h+='</div>';
+    if(past.length){ h+='<div class="card"><h2>Past</h2>'; past.slice(0,8).forEach(function(e){ h+=itemEvent(e,parse(e.date)); }); h+='</div>'; }
+    // Notes from Mrs. Rivera — progress updates
+    if(PROGRESS_UPDATES && PROGRESS_UPDATES.length){
+      h+='<div class="card"><h2>Notes from Mrs. Rivera — Alex’s progress</h2>'+progressListHTML()+'</div>';
+    }
+    document.getElementById("view-school").innerHTML=h;
+  }
+
+  function renderTodos(){
+    var open=S.todos.filter(function(t){return !t.done;}).sort(function(a,b){return (a.due||"9999").localeCompare(b.due||"9999");});
+    var done=S.todos.filter(function(t){return t.done;});
+    var h='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">Shared to-dos</h2>'+
+      '<button class="btn sm" onclick="FH.addTodo()">+ Add</button></div><div style="height:8px"></div>';
+    if(open.length===0) h+='<div class="empty">Nothing open. Add permission slips, forms, appointments, packing reminders…</div>';
+    else open.forEach(function(t){ h+=itemTodo(t, t.due&&parse(t.due)<cur); });
+    h+='</div>';
+    if(done.length){ h+='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">Done ('+done.length+')</h2>'+
+      '<button class="iconbtn" onclick="FH.clearDone()">Clear</button></div><div style="height:6px"></div>';
+      done.slice(0,12).forEach(function(t){ h+=itemTodo(t,false); }); h+='</div>'; }
+    document.getElementById("view-todos").innerHTML=h;
+  }
+
+  function volHours(who,status){
+    return S.volunteers.filter(function(v){ return (who?v.who===who:true) && (status?v.status===status:true); })
+      .reduce(function(s,v){ return s + (parseFloat(v.hours)||0); },0);
+  }
+  function fmtHrs(n){ return (Math.round(n*10)/10).toString().replace(/\.0$/,""); }
+
+  function renderVolunteers(){
+    var doneA=volHours("a","completed"), doneB=volHours("b","completed"), doneAll=doneA+doneB;
+    var upcoming=S.volunteers.filter(function(v){ return v.status!=="completed"; })
+      .sort(function(a,b){ return (a.date||"9999").localeCompare(b.date||"9999"); });
+    var completed=S.volunteers.filter(function(v){ return v.status==="completed"; })
+      .sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
+    var committed=upcoming.reduce(function(s,v){ return s+(parseFloat(v.hours)||0); },0);
+
+    var h='';
+    // totals card
+    h+='<div class="card"><h2>Volunteer hours logged</h2>';
+    h+='<div class="row" style="gap:10px">';
+    h+='<div class="grow" style="background:var(--'+colorVar("a")+'-soft);border-radius:12px;padding:14px;text-align:center">'+
+       '<div style="font-size:28px;font-weight:800;color:var(--'+colorVar("a")+')">'+fmtHrs(doneA)+'</div>'+
+       '<div class="mini">'+esc(parentOf("a").name)+'</div></div>';
+    h+='<div class="grow" style="background:var(--'+colorVar("b")+'-soft);border-radius:12px;padding:14px;text-align:center">'+
+       '<div style="font-size:28px;font-weight:800;color:var(--'+colorVar("b")+')">'+fmtHrs(doneB)+'</div>'+
+       '<div class="mini">'+esc(parentOf("b").name)+'</div></div>';
+    h+='<div class="grow" style="background:var(--accent-soft);border-radius:12px;padding:14px;text-align:center">'+
+       '<div style="font-size:28px;font-weight:800;color:var(--accent)">'+fmtHrs(doneAll)+'</div>'+
+       '<div class="mini">Family total</div></div>';
+    h+='</div>';
+    if(committed>0) h+='<div class="mini" style="margin-top:10px">Plus <b>'+fmtHrs(committed)+'h</b> committed but not yet completed.</div>';
+    h+='</div>';
+
+    // upcoming signups
+    h+='<div class="card"><div style="display:flex;align-items:center"><h2 style="margin:0;flex:1">Signed up — upcoming</h2>'+
+       '<button class="btn sm" onclick="FH.addVol()">+ Log</button></div><div style="height:8px"></div>';
+    if(upcoming.length===0) h+='<div class="empty">Nothing signed up yet. When you sign up on signup.com, log it here (or I can pull it in from your email automatically).</div>';
+    else upcoming.forEach(function(v){ h+=itemVol(v); });
+    h+='</div>';
+
+    if(completed.length){
+      h+='<div class="card"><h2>Completed</h2>';
+      completed.forEach(function(v){ h+=itemVol(v); });
+      h+='</div>';
+    }
+    document.getElementById("view-volunteers").innerHTML=h;
+  }
+  function itemVol(v){
+    var who = v.who==="a"?parentOf("a").name:v.who==="b"?parentOf("b").name:"—";
+    var wc = v.who==="a"?colorVar("a"):v.who==="b"?colorVar("b"):"accent";
+    var when = v.date?fmt(parse(v.date))+(v.time?" · "+v.time:""):"No date";
+    var meta=[who, when]; if(v.org) meta.push(v.org);
+    var hrs = (parseFloat(v.hours)||0)>0 ? fmtHrs(v.hours)+"h" : "";
+    var done = v.status==="completed";
+    return '<div class="item '+(done?"done":"")+'">'+
+      '<div class="chk '+(done?"on":"")+'" onclick="FH.toggleVol(\''+v.id+'\')" title="Mark completed">'+(done?"✓":"")+'</div>'+
+      '<div class="grow" onclick="FH.editVol(\''+v.id+'\')"><div class="t">🙌 '+esc(v.title)+'</div>'+
+      '<div class="m">'+esc(meta.join(" · "))+'</div></div>'+
+      '<div class="rt">'+(hrs?'<span class="pill" style="'+ (v.who==="a"?colStyle("a"):v.who==="b"?colStyle("b"):"background:var(--accent-soft);color:var(--accent)") +'">'+hrs+'</span>':'')+'</div>'+
+      '</div>';
+  }
+  function volForm(v){
+    v=v||{id:"",title:"",org:"signup.com",date:"",time:"",hours:"",who:"a",status:"signedup",notes:""};
+    var wsel=""; [["a",parentOf("a").name],["b",parentOf("b").name]].forEach(function(o){
+      wsel+='<div class="opt '+(v.who===o[0]?"sel":"")+'" data-who="'+o[0]+'" onclick="FH.pick(this,\'who\')">'+esc(o[1])+'</div>'; });
+    var ssel=""; [["signedup","Signed up"],["completed","Completed"]].forEach(function(o){
+      ssel+='<div class="opt '+(v.status===o[0]?"sel":"")+'" data-status="'+o[0]+'" onclick="FH.pick(this,\'status\')">'+o[1]+'</div>'; });
+    var h='<h3>'+(v.id?"Edit":"Log")+' volunteer time</h3><div style="height:10px"></div>';
+    h+='<input type="hidden" id="v_id" value="'+esc(v.id)+'">';
+    h+='<label class="fld"><span class="lb">What / role</span><input class="in" id="v_title" value="'+esc(v.title)+'" placeholder="e.g. Festival booth, Library helper"></label>';
+    h+='<div class="row"><label class="fld grow"><span class="lb">Date</span><input class="in" type="date" id="v_date" value="'+esc(v.date)+'"></label>'+
+       '<label class="fld grow"><span class="lb">Time</span><input class="in" type="time" id="v_time" value="'+esc(v.time)+'"></label>'+
+       '<label class="fld" style="width:90px"><span class="lb">Hours</span><input class="in" type="number" step="0.5" min="0" id="v_hours" value="'+esc(v.hours)+'" placeholder="2"></label></div>';
+    h+='<label class="fld"><span class="lb">Who</span><div class="seg" id="volWhoSeg">'+wsel+'</div></label>';
+    h+='<label class="fld"><span class="lb">Status</span><div class="seg" id="volStatusSeg">'+ssel+'</div></label>';
+    h+='<label class="fld"><span class="lb">Source / notes</span><input class="in" id="v_org" value="'+esc(v.org)+'" placeholder="signup.com, room parent, etc."></label>';
+    h+='<div style="height:6px"></div><button class="btn block" onclick="FH.saveVol()">Save</button>';
+    if(v.id) h+='<div style="height:8px"></div><button class="btn ghost block" onclick="FH.delVol(\''+v.id+'\')">Delete</button>';
+    openSheet(h);
+  }
+
+  function renderSettings(){
+    var h='';
+    h+='<div class="card"><h2>Family</h2>'+
+      fld("Child's name","child",S.child)+
+      fld("School name","school",S.school)+'</div>';
+    h+='<div class="card"><h2>Parents & homes</h2>'+
+      '<div class="row"><div class="grow">'+fld("Parent A name","pa.name",S.pa.name)+fld("Home A label","pa.home",S.pa.home)+colorPick("pa")+'</div></div>'+
+      '<div class="row"><div class="grow">'+fld("Parent B name","pb.name",S.pb.name)+fld("Home B label","pb.home",S.pb.home)+colorPick("pb")+'</div></div>'+
+      '</div>';
+    h+='<div class="card"><h2>2-2-3 rotation</h2>'+
+      '<div class="banner">Set the cycle start date and who has '+esc(S.child)+' that day. The 2-2-3 pattern (2 days, 2 days, 3 days, alternating) is generated automatically. Adjust the date until the calendar matches your real schedule.</div>'+
+      fld("Cycle start date","anchor",S.anchor,"date")+
+      '<label class="fld"><span class="lb">Who has '+esc(S.child)+' on that date?</span>'+
+      '<div class="seg" id="startSeg">'+
+      '<div class="opt '+(S.startParent==="a"?"sel":"")+'" onclick="FH.setStart(\'a\')">'+esc(S.pa.name)+'</div>'+
+      '<div class="opt '+(S.startParent==="b"?"sel":"")+'" onclick="FH.setStart(\'b\')">'+esc(S.pb.name)+'</div>'+
+      '</div></label>'+
+      '<div class="mini" id="rotPreview"></div>'+
+      '</div>';
+    h+='<div class="card"><h2>Homework reminders</h2>'+
+      '<div class="banner">Add a to-do with category 📖 Homework and a due date of today, and Family Hub will pop up a checklist at 3:00pm (while the app is open) so nothing gets forgotten.</div>'+
+      (window.Notification && Notification.permission==="granted"
+        ? '<div class="mini">🔔 Browser alerts are on — you\'ll also get a notification, even if the tab is just open in the background.</div>'
+        : '<button class="btn ghost block" onclick="FH.enableHwNotifications()">🔔 Also alert me outside the tab</button>')+
+      '</div>';
+    h+='<div class="card"><h2>Sync between homes</h2>'+
+      '<div class="banner">Changes you make save automatically and show up on any device you\'re signed into. Anyone else with the link sees live updates but can\'t edit. The buttons below are only for a one-time backup or for handing a copy to someone else.</div>'+
+      '<button class="btn ghost block" onclick="FH.exportData()">📤 Copy backup / sync code</button><div style="height:8px"></div>'+
+      '<button class="btn ghost block" onclick="FH.importData()">📥 Paste code to import</button></div>';
+    h+='<div class="card"><h2>Danger zone</h2>'+
+      '<button class="btn ghost block" onclick="FH.loadSample()">Load sample data (to explore)</button><div style="height:8px"></div>'+
+      '<button class="btn danger block" onclick="FH.resetAll()">Reset everything</button></div>';
+    document.getElementById("view-settings").innerHTML=h;
+    updateRotPreview();
+  }
+  function colorPick(key){
+    var colors=["pa","pb","accent","both"];
+    var cur=parentOf(key).color;
+    var s='<label class="fld"><span class="lb">Color</span><div class="seg">';
+    colors.forEach(function(c){ s+='<div class="opt '+(cur===c?"sel":"")+'" style="border-color:var(--'+c+')" onclick="FH.setColor(\''+key+'\',\''+c+'\')"><span class="dot" style="background:var(--'+c+');display:inline-block"></span></div>'; });
+    return s+'</div></label>';
+  }
+  function fld(label,path,val,type){
+    return '<label class="fld"><span class="lb">'+label+'</span>'+
+      '<input class="in" type="'+(type||"text")+'" value="'+esc(val)+'" oninput="FH.setField(\''+path+'\',this.value)"></label>';
+  }
+  function updateRotPreview(){
+    var el=document.getElementById("rotPreview"); if(!el) return;
+    var s="Next 7 days: ";
+    var parts=[]; for(var i=0;i<7;i++){ var d=addDays(cur,i); parts.push(DOW[d.getDay()]+" "+parentOf(whoOn(d)).name.split(" ")[0]); }
+    el.textContent=s+parts.join(" · ");
+  }
+
+  // ---------- sheets (modals) ----------
+  var scrim=document.getElementById("scrim"), sheet=document.getElementById("sheet");
+  function openSheet(html){ sheet.innerHTML=html; scrim.classList.add("on"); }
+  function closeSheet(){ scrim.classList.remove("on"); }
+  scrim.addEventListener("click",function(e){ if(e.target===scrim) closeSheet(); });
+
+  function openDay(di){
+    var d=parse(di), w=whoOn(d), p=parentOf(w);
+    var evs=eventsOn(di), tds=todosOn(di);
+    var h='<h3>'+fmt(d)+'</h3>';
+    h+='<div style="height:12px"></div><span class="pill" style="'+colStyle(w)+'"><span class="dot" style="background:var(--'+colorVar(w)+')"></span>'+esc(p.name)+' · '+esc(p.home)+'</span>';
+    var ho=nextHandoff(d);
+    h+='<div class="day-detail">';
+    h+='<div style="margin:14px 0 6px" class="mini">SCHOOL EVENTS</div>';
+    if(evs.length===0) h+='<div class="mini">None</div>';
+    else evs.forEach(function(e){ h+=itemEvent(e); });
+    h+='<div style="margin:14px 0 6px" class="mini">TO-DOS DUE</div>';
+    if(tds.length===0) h+='<div class="mini">None</div>';
+    else tds.forEach(function(t){ h+=itemTodo(t,false); });
+    h+='<div style="height:16px"></div>';
+    h+='<div class="row"><button class="btn grow" onclick="FH.addEvent(\''+di+'\')">+ School event</button>'+
+       '<button class="btn ghost grow" onclick="FH.addTodo(\''+di+'\')">+ To-do</button></div>';
+    h+='</div>';
+    openSheet(h);
+  }
+
+  function eventForm(ev,presetDate,presetType){
+    ev=ev||{id:"",title:"",date:presetDate||iso(cur),time:"",type:presetType||"event",notes:"",remind:"1"};
+    var tsel="";
+    Object.keys(TYPES).forEach(function(k){ tsel+='<div class="opt '+(ev.type===k?"sel":"")+'" data-type="'+k+'" onclick="FH.pick(this,\'type\')">'+TYPES[k].i+' '+TYPES[k].l+'</div>'; });
+    var h='<h3>'+(ev.id?"Edit":"New")+' '+(TYPES[ev.type]?TYPES[ev.type].l.toLowerCase():"event")+'</h3><div style="height:10px"></div>';
+    h+='<input type="hidden" id="f_id" value="'+esc(ev.id)+'">';
+    h+='<label class="fld"><span class="lb">Title</span><input class="in" id="f_title" value="'+esc(ev.title)+'" placeholder="e.g. Early release / Field trip"></label>';
+    h+='<div class="row"><label class="fld grow"><span class="lb">Date</span><input class="in" type="date" id="f_date" value="'+esc(ev.date)+'"></label>'+
+       '<label class="fld grow"><span class="lb">Time (optional)</span><input class="in" type="time" id="f_time" value="'+esc(ev.time)+'"></label></div>';
+    h+='<label class="fld"><span class="lb">Type</span><div class="seg" id="typeSeg">'+tsel+'</div></label>';
+    h+='<label class="fld"><span class="lb">Notes</span><textarea class="in" id="f_notes" placeholder="Who needs to know, what to bring…">'+esc(ev.notes)+'</textarea></label>';
+    h+='<div style="height:6px"></div><button class="btn block" onclick="FH.saveEvent()">Save event</button>';
+    if(ev.id) h+='<div style="height:8px"></div><button class="btn ghost block" onclick="FH.delEvent(\''+ev.id+'\')">Delete</button>';
+    openSheet(h);
+  }
+
+  function todoForm(t,presetDate){
+    t=t||{id:"",title:"",due:presetDate||"",who:"both",cat:"other",done:false};
+    var csel=""; Object.keys(CATS).forEach(function(k){ csel+='<div class="opt '+(t.cat===k?"sel":"")+'" data-cat="'+k+'" onclick="FH.pick(this,\'cat\')">'+CATS[k]+' '+k+'</div>'; });
+    var wsel="";
+    [["a",parentOf("a").name],["b",parentOf("b").name],["both","Both"]].forEach(function(o){
+      wsel+='<div class="opt '+(t.who===o[0]?"sel":"")+'" data-who="'+o[0]+'" onclick="FH.pick(this,\'who\')">'+esc(o[1])+'</div>';
+    });
+    var h='<h3>'+(t.id?"Edit":"New")+' to-do</h3><div style="height:10px"></div>';
+    h+='<input type="hidden" id="t_id" value="'+esc(t.id)+'">';
+    h+='<label class="fld"><span class="lb">What needs doing?</span><input class="in" id="t_title" value="'+esc(t.title)+'" placeholder="e.g. Sign permission slip"></label>';
+    h+='<label class="fld"><span class="lb">Due date (optional)</span><input class="in" type="date" id="t_due" value="'+esc(t.due)+'"></label>';
+    h+='<label class="fld"><span class="lb">Responsible</span><div class="seg" id="whoSeg">'+wsel+'</div></label>';
+    h+='<label class="fld"><span class="lb">Category</span><div class="seg" id="catSeg">'+csel+'</div></label>';
+    h+='<div style="height:6px"></div><button class="btn block" onclick="FH.saveTodo()">Save to-do</button>';
+    if(t.id) h+='<div style="height:8px"></div><button class="btn ghost block" onclick="FH.delTodo(\''+t.id+'\')">Delete</button>';
+    openSheet(h);
+  }
+
+  // ---------- public API ----------
+  var FH = {
+    tab:function(name){
+      ["today","calendar","school","sports","activities","todos","volunteers","settings"].forEach(function(v){
+        document.getElementById("view-"+v).classList.toggle("hidden",v!==name);
+      });
+      document.querySelectorAll("nav.tabs button").forEach(function(b){ b.classList.toggle("active",b.dataset.tab===name); });
+      if(name==="today") renderToday();
+      if(name==="calendar") renderCalendar();
+      if(name==="school") renderSchool();
+      if(name==="sports") renderSports();
+      if(name==="activities") renderActivities();
+      if(name==="todos") renderTodos();
+      if(name==="volunteers") renderVolunteers();
+      if(name==="settings") renderSettings();
+      window.scrollTo(0,0);
+    },
+    addVol:function(){ volForm(null); },
+    editVol:function(id){ var v=S.volunteers.find(function(x){return x.id===id;}); if(v) volForm(v); },
+    saveVol:function(){
+      var id=document.getElementById("v_id").value;
+      var title=document.getElementById("v_title").value.trim(); if(!title){ alert("Add a title."); return; }
+      var obj={id:id||uid(),title:title,org:document.getElementById("v_org").value.trim(),
+        date:document.getElementById("v_date").value,time:document.getElementById("v_time").value,
+        hours:document.getElementById("v_hours").value,
+        who:sheet.querySelector("#volWhoSeg .opt.sel").dataset.who,
+        status:sheet.querySelector("#volStatusSeg .opt.sel").dataset.status,notes:""};
+      if(id){ var i=S.volunteers.findIndex(function(x){return x.id===id;}); S.volunteers[i]=obj; } else S.volunteers.push(obj);
+      save(); closeSheet(); refresh();
+    },
+    delVol:function(id){ S.volunteers=S.volunteers.filter(function(x){return x.id!==id;}); save(); closeSheet(); refresh(); },
+    toggleVol:function(id){ var v=S.volunteers.find(function(x){return x.id===id;}); if(v){ v.status=v.status==="completed"?"signedup":"completed"; save(); refresh(); } },
+    showTeacher:function(){ openTeacherModal(); },
+    closeTeacher:function(){ try{ localStorage.setItem("familyHub.teacherSeen", TEACHER_NOTE.week); }catch(e){} closeSheet(); },
+    showProgress:function(){ openProgressModal(); },
+    closeSheet:function(){ closeSheet(); },
+    calNav:function(n){ calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+n,1); renderCalendar(); },
+    calToday:function(){ calMonth=new Date(cur.getFullYear(),cur.getMonth(),1); renderCalendar(); },
+    openDay:openDay,
+    addEvent:function(d){ eventForm(null,d); },
+    addSports:function(d){ eventForm(null,d,"sports"); },
+    addActivity:function(d){ eventForm(null,d,"activity"); },
+    editEvent:function(id){ var e=S.events.find(function(x){return x.id===id;}); if(e) eventForm(e); },
+    saveEvent:function(){
+      var id=document.getElementById("f_id").value;
+      var title=document.getElementById("f_title").value.trim(); if(!title){ alert("Please add a title."); return; }
+      var obj={id:id||uid(),title:title,date:document.getElementById("f_date").value,
+        time:document.getElementById("f_time").value,type:sheet.querySelector("#typeSeg .opt.sel").dataset.type,
+        notes:document.getElementById("f_notes").value.trim()};
+      if(id){ var i=S.events.findIndex(function(x){return x.id===id;}); S.events[i]=obj; } else S.events.push(obj);
+      save(); closeSheet(); refresh();
+    },
+    delEvent:function(id){ S.events=S.events.filter(function(x){return x.id!==id;}); save(); closeSheet(); refresh(); },
+    addTodo:function(d){ todoForm(null,d); },
+    editTodo:function(id){ var t=S.todos.find(function(x){return x.id===id;}); if(t) todoForm(t); },
+    saveTodo:function(){
+      var id=document.getElementById("t_id").value;
+      var title=document.getElementById("t_title").value.trim(); if(!title){ alert("Please add a title."); return; }
+      var obj={id:id||uid(),title:title,due:document.getElementById("t_due").value,
+        who:sheet.querySelector("#whoSeg .opt.sel").dataset.who,cat:sheet.querySelector("#catSeg .opt.sel").dataset.cat,
+        done:id?S.todos.find(function(x){return x.id===id;}).done:false};
+      if(id){ var i=S.todos.findIndex(function(x){return x.id===id;}); S.todos[i]=obj; } else S.todos.push(obj);
+      save(); closeSheet(); refresh();
+    },
+    delTodo:function(id){ S.todos=S.todos.filter(function(x){return x.id!==id;}); save(); closeSheet(); refresh(); },
+    toggleTodo:function(id){ var t=S.todos.find(function(x){return x.id===id;}); if(t){ t.done=!t.done; save(); refresh(); } },
+    toggleHomeworkTodo:function(id){ var t=S.todos.find(function(x){return x.id===id;}); if(t){ t.done=!t.done; save(); refresh(); } renderHomeworkModal(); },
+    enableHwNotifications:function(){
+      try{
+        if(!window.Notification){ alert("Notifications aren't supported in this browser."); return; }
+        Notification.requestPermission().then(function(){ renderSettings(); });
+      }catch(e){}
+    },
+    clearDone:function(){ if(confirm("Remove all completed to-dos?")){ S.todos=S.todos.filter(function(t){return !t.done;}); save(); refresh(); } },
+    pick:function(el,group){ el.parentNode.querySelectorAll(".opt").forEach(function(o){o.classList.remove("sel");}); el.classList.add("sel"); },
+    setField:function(path,val){ setPath(S,path,val); save(); renderHeader(); if(path==="anchor") updateRotPreview(); },
+    setStart:function(w){ S.startParent=w; save(); renderSettings(); },
+    setColor:function(key,c){ parentOf(key).color=c; save(); renderSettings(); renderHeader(); },
+    addEventQuick:function(){ eventForm(); },
+    exportData:function(){
+      var code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+      var h='<h3>Sync / backup code</h3><div class="banner">Copy this and send it to your co-parent. They open the hub → Setup → “Paste code to import”. This overwrites their data with yours.</div>'+
+        '<textarea class="in" style="min-height:140px;font-family:monospace;font-size:11px" readonly id="expBox">'+code+'</textarea>'+
+        '<div style="height:8px"></div><button class="btn block" onclick="FH.doCopy()">Copy to clipboard</button>';
+      openSheet(h);
+      setTimeout(function(){ document.getElementById("expBox").select(); },50);
+    },
+    doCopy:function(){ var b=document.getElementById("expBox"); b.select();
+      try{ navigator.clipboard.writeText(b.value); }catch(e){ document.execCommand("copy"); }
+      var btn=event.target; btn.textContent="Copied ✓"; },
+    importData:function(){
+      var h='<h3>Import data</h3><div class="banner">Paste a sync code from your co-parent. This replaces everything on this device.</div>'+
+        '<textarea class="in" style="min-height:140px;font-family:monospace;font-size:11px" id="impBox" placeholder="Paste code here…"></textarea>'+
+        '<div style="height:8px"></div><button class="btn block" onclick="FH.doImport()">Import & replace</button>';
+      openSheet(h);
+    },
+    doImport:function(){
+      try{
+        var raw=decodeURIComponent(escape(atob(document.getElementById("impBox").value.trim())));
+        var obj=JSON.parse(raw); S=Object.assign({},defaults,obj); save(); closeSheet(); renderHeader(); FH.tab("today");
+        alert("Imported ✓");
+      }catch(e){ alert("That code didn't work. Check you copied all of it."); }
+    },
+    loadSample:function(){
+      var t0=iso(addDays(cur,2)), t1=iso(addDays(cur,5)), t2=iso(addDays(cur,9)), t3=iso(addDays(cur,-1));
+      S.events=S.events.concat([
+        {id:uid(),title:"Early release day",date:t0,time:"12:30",type:"early",notes:"Pickup 12:30 instead of 3:15"},
+        {id:uid(),title:"No school – Teacher day",date:t2,time:"",type:"holiday",notes:""},
+        {id:uid(),title:"Class field trip – museum",date:t1,time:"09:00",type:"event",notes:"Pack lunch + $5"}
+      ]);
+      S.todos=S.todos.concat([
+        {id:uid(),title:"Sign & return field trip form",due:t0,who:"a",cat:"form",done:false},
+        {id:uid(),title:"Book dentist checkup",due:t1,who:"b",cat:"appt",done:false},
+        {id:uid(),title:"Pack soccer cleats for handoff",due:iso(cur),who:"both",cat:"pack",done:false},
+        {id:uid(),title:"Refill inhaler prescription",due:t3,who:"a",cat:"appt",done:false}
+      ]);
+      save(); FH.tab("today"); alert("Sample data added — explore, then Reset when ready.");
+    },
+    resetAll:function(){ if(confirm("Erase all data on this device and start fresh?")){ S=JSON.parse(JSON.stringify(defaults)); save(); renderHeader(); FH.tab("settings"); } },
+    theme:function(){
+      var root=document.documentElement;
+      var isDark = root.getAttribute("data-theme")==="dark" || (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme:dark)").matches);
+      root.setAttribute("data-theme", isDark?"light":"dark");
+      S.theme = isDark?"light":"dark"; save();
+      document.getElementById("themeBtn").textContent = isDark?"☀️":"🌙";
+    }
+  };
+  function setPath(o,path,val){ var p=path.split("."); var t=o; for(var i=0;i<p.length-1;i++) t=t[p[i]]; t[p[p.length-1]]=val; }
+  function refresh(){
+    var active=document.querySelector("nav.tabs button.active").dataset.tab;
+    FH.tab(active);
+  }
+  window.FH=FH;
+
+  // ---------- init ----------
+  document.querySelectorAll("nav.tabs button").forEach(function(b){ b.addEventListener("click",function(){ FH.tab(b.dataset.tab); }); });
+  document.getElementById("themeBtn").addEventListener("click",FH.theme);
+  if(S.theme){ document.documentElement.setAttribute("data-theme",S.theme); document.getElementById("themeBtn").textContent=S.theme==="dark"?"☀️":"🌙"; }
+  renderHeader();
+  FH.tab("today");
+  // Auto-open Mrs. Rivera's note once per new week
+  try{
+    if(TEACHER_NOTE && TEACHER_NOTE.week && localStorage.getItem("familyHub.teacherSeen")!==TEACHER_NOTE.week){
+      setTimeout(openTeacherModal, 500);
+    }
+  }catch(e){}
+  // Homework check-in: pop up once after 3pm if there's homework due today left unchecked.
+  // Only fires while the app is open in a tab — there's no way to alert when it's fully closed.
+  setTimeout(checkHomeworkAlert, 1500);
+  setInterval(checkHomeworkAlert, 60000);
+})();
+</script>
+
+</body>
+</html>

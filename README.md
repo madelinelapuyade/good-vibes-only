@@ -29,7 +29,7 @@ This repo is where I put that operator's mindset into building — a running sho
 
 | Project | Description | Built With | Link |
 |---|---|---|---|
-| _Coming soon_ | — | — | — |
+| [Family Hub](./family-hub) | Custody/co-parenting schedule tracker — calendar, school notes, sports, to-dos, and volunteer hours in one single-file app | Claude Code | [Demo source](./family-hub) |
 
 > More projects added as they're built — check back often.
 
