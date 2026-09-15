@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zen — Project Ops, Automated</title>
+<style>
+  :root{
+    --bg:#0f1115; --surface:#171a21; --surface-2:#1d2129; --border:#2a2f3a;
+    --text:#eef0f4; --muted:#8890a0; --accent:#7c9eff; --accent-soft:#1c2540;
+    --good:#4ade80; --good-soft:#12291c; --warn:#facc15; --warn-soft:#332a0d;
+    --bad:#f87171; --bad-soft:#3a1616;
+    --radius:14px; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.45}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 60px}
+  h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.01em}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--accent);text-decoration:none}
+
+  header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 90%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .head-in{display:flex;align-items:center;gap:12px;max-width:1080px;margin:0 auto;padding:16px 20px}
+  .logo{width:32px;height:32px;border-radius:9px;background:var(--accent);color:#0f1115;
+    display:grid;place-items:center;font-size:16px;font-weight:800;flex:none}
+  .head-title{font-size:17px;font-weight:800}
+  .head-sub{font-size:12px;color:var(--muted);font-weight:600}
+  nav.tabs{margin-left:auto;display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:3px}
+  nav.tabs button{background:none;border:none;color:var(--muted);font-weight:700;font-size:13px;
+    padding:7px 14px;border-radius:8px}
+  nav.tabs button.active{background:var(--accent-soft);color:var(--accent)}
+
+  .hero{padding:36px 0 24px}
+  .hero h1{font-size:26px}
+  .hero p{color:var(--muted);font-size:14.5px;margin-top:8px;max-width:640px}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:14px}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,1fr)}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:720px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}}
+
+  .proj{background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:16px;
+    cursor:pointer;transition:border-color .15s}
+  .proj:hover{border-color:var(--accent)}
+  .proj .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .proj .name{font-weight:700;font-size:15px}
+  .proj .owner{font-size:12px;color:var(--muted);margin-top:2px}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;
+    padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+  .pill.good{background:var(--good-soft);color:var(--good)}
+  .pill.warn{background:var(--warn-soft);color:var(--warn)}
+  .pill.bad{background:var(--bad-soft);color:var(--bad)}
+  .bar{height:6px;background:var(--border);border-radius:99px;margin-top:14px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent)}
+  .proj .meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:8px;font-weight:600}
+
+  .btn{background:var(--accent);color:#0f1115;border:none;border-radius:9px;padding:9px 14px;
+    font-weight:800;font-size:13px}
+  .btn.ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+  .backbtn{background:none;border:none;color:var(--muted);font-weight:700;font-size:13px;padding:6px 0;
+    display:flex;align-items:center;gap:6px}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--muted);font-weight:700;text-transform:uppercase;font-size:10.5px;
+    letter-spacing:.04em;padding:0 10px 8px;border-bottom:1px solid var(--border)}
+  td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .role{display:inline-flex;width:22px;height:22px;border-radius:6px;background:var(--surface-2);
+    color:var(--accent);align-items:center;justify-content:center;font-size:11px;font-weight:800;
+    border:1px solid var(--border)}
+
+  .item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--border)}
+  .item:first-child{border-top:none}
+  .chk{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex:none;margin-top:1px;
+    display:grid;place-items:center;font-size:12px;color:#0f1115;background:var(--surface-2)}
+  .chk.on{background:var(--good);border-color:var(--good)}
+  .item .t{font-weight:600;font-size:13.5px}
+  .item.done .t{text-decoration:line-through;color:var(--muted)}
+  .item .m{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  .feed-item{padding:14px 0;border-top:1px solid var(--border)}
+  .feed-item:first-child{border-top:none}
+  .feed-item .fh{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .feed-item .ft{font-weight:700;font-size:14px}
+  .feed-item .fd{font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .feed-item .fs{font-size:13px;color:var(--muted);margin-top:6px}
+  .feed-item .decision{margin-top:8px;font-size:12.5px;background:var(--accent-soft);color:var(--accent);
+    padding:6px 10px;border-radius:8px;display:inline-block}
+
+  .pipe{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+  .step{flex:none;width:150px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;
+    padding:14px;text-align:center}
+  .step .n{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+    display:grid;place-items:center;font-weight:800;font-size:12px;margin:0 auto 8px}
+  .step .l{font-size:12.5px;font-weight:700}
+  .step .d{font-size:11px;color:var(--muted);margin-top:4px}
+  .arrow{align-self:center;color:var(--muted);flex:none}
+
+  .hidden{display:none!important}
+  .muted{color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 0 10px}
+  footer a{color:var(--muted);text-decoration:underline}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <div class="logo">Z</div>
+    <div>
+      <div class="head-title">Zen</div>
+      <div class="head-sub">Project ops, automated — demo</div>
+    </div>
+    <nav class="tabs">
+      <button data-tab="portfolio" class="active">Portfolio</button>
+      <button data-tab="pipeline">Pipeline</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="view-portfolio">
+    <div class="hero">
+      <h1>Your projects, already organized</h1>
+      <p>Zen turns raw meeting recordings into structured project updates — summaries, action items, decisions, and follow-ups — so PMs review instead of transcribe. This is a sample portfolio for <b>Northlight Robotics</b>, a fictional company, showing what a PM sees each morning.</p>
+    </div>
+
+    <div class="card">
+      <h2>Portfolio health</h2>
+      <div class="grid cols-3" id="projGrid"></div>
+    </div>
+  </section>
+
+  <section id="view-project" class="hidden">
+    <button class="backbtn" id="backBtn">‹ Back to portfolio</button>
+    <div class="hero" style="padding-top:8px">
+      <h1 id="pTitle"></h1>
+      <p id="pSub" class="muted"></p>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Charter</h2>
+        <div id="pCharter" style="font-size:13.5px"></div>
+      </div>
+      <div class="card">
+        <h2>RASIC matrix</h2>
+        <table id="pRasic"></table>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Action items</h2>
+        <div id="pActions"></div>
+      </div>
+      <div class="card">
+        <h2>Meeting feed</h2>
+        <div id="pFeed"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Export</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="exportCsv">Download action items (CSV)</button>
+        <button class="btn ghost" id="exportBrief">Copy stakeholder brief</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-pipeline" class="hidden">
+    <div class="hero">
+      <h1>How it works</h1>
+      <p>One pipeline runs every morning for each active project — no manual effort until the PM reviews the result.</p>
+    </div>
+    <div class="card">
+      <div class="pipe" id="pipeRow"></div>
+    </div>
+    <div class="card">
+      <h2>Why it matters</h2>
+      <p style="font-size:14px;color:var(--muted)">A PM managing 5–7 projects can lose an hour a day to writing summaries, chasing action items, and prepping status decks. Automating the mechanical half of that work — while keeping a human review step before anything reaches the team — gives that time back without losing accountability.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Sample data only — a rebuilt, original demo. Built with Claude Code.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var PROJECTS = [
+    {
+      id:"atlas", name:"Atlas Platform Migration", owner:"Priya K.", status:"good", progress:72,
+      why:"Move the legacy billing platform onto the new infrastructure before the Q3 contract renewal window.",
+      what:"Migrate data, cut over traffic in stages, and decommission the old system with zero billing downtime.",
+      metrics:"Zero downtime during cutover · migration complete by Sept 30 · no billing discrepancies in first 30 days.",
+      rasic:[
+        {role:"R", who:"Priya K.", note:"Migration lead"},
+        {role:"A", who:"Diego M.", note:"Engineering director"},
+        {role:"S", who:"Nora F.", note:"Infra support"},
+        {role:"I", who:"Finance team", note:"Billing impact"}
+      ],
+      actions:[
+        {t:"Finalize cutover runbook", who:"Priya K.", due:"Sep 18", done:true},
+        {t:"Schedule Q3 stakeholder review", who:"Diego M.", due:"Sep 22", done:false},
+        {t:"Load-test staged traffic split", who:"Nora F.", due:"Sep 24", done:false}
+      ],
+      feed:[
+        {t:"Weekly Sync", d:"Sep 15", s:"Cutover plan reviewed; staged rollout approved starting with 10% of traffic.", decision:"Go with staged cutover, not a single big-bang release."},
+        {t:"Infra Review", d:"Sep 11", s:"Load testing results came back clean at 2x expected peak traffic."}
+      ]
+    },
+    {
+      id:"helix", name:"Helix Customer Portal Redesign", owner:"Sam T.", status:"warn", progress:41,
+      why:"Replace the aging customer portal with a faster, more accessible experience ahead of the annual renewal cycle.",
+      what:"Redesign the account, billing, and support views; migrate existing customer data without disruption.",
+      metrics:"Support ticket volume down 20% post-launch · page load under 1.5s · accessibility audit passed.",
+      rasic:[
+        {role:"R", who:"Sam T.", note:"Design + frontend lead"},
+        {role:"A", who:"Priya K.", note:"Product owner"},
+        {role:"C", who:"Support team", note:"Ticket taxonomy input"},
+        {role:"I", who:"Marketing", note:"Launch messaging"}
+      ],
+      actions:[
+        {t:"Resolve outstanding accessibility findings", who:"Sam T.", due:"Sep 19", done:false},
+        {t:"Confirm data migration plan with support team", who:"Sam T.", due:"Sep 20", done:false},
+        {t:"Finalize launch messaging", who:"Marketing", due:"Sep 26", done:false}
+      ],
+      feed:[
+        {t:"Design Review", d:"Sep 14", s:"Accessibility audit surfaced 6 contrast issues on the billing view; fixes scoped for this week.", decision:"Delay launch by one week to close accessibility gaps."},
+        {t:"Support Sync", d:"Sep 9", s:"Agreed on the top 5 ticket categories to fold into the new self-serve flow."}
+      ]
+    },
+    {
+      id:"nova", name:"Nova Onboarding Flow", owner:"Jordan R.", status:"bad", progress:18,
+      why:"Cut new-customer time-to-first-value from 9 days to under 2 by simplifying onboarding.",
+      what:"Rebuild the onboarding wizard and automate the manual setup steps currently handled by support.",
+      metrics:"Time-to-first-value under 2 days · onboarding completion rate above 85%.",
+      rasic:[
+        {role:"R", who:"Jordan R.", note:"Ops lead"},
+        {role:"A", who:"Diego M.", note:"Engineering director"},
+        {role:"S", who:"Nora F.", note:"Automation support"}
+      ],
+      actions:[
+        {t:"Unblock automation script access", who:"Nora F.", due:"Sep 16", done:false},
+        {t:"Re-scope onboarding wizard MVP", who:"Jordan R.", due:"Sep 23", done:false}
+      ],
+      feed:[
+        {t:"Status Check", d:"Sep 12", s:"Automation script is blocked on a permissions issue; project has stalled for a week.", decision:"Escalate the access request to unblock this week."}
+      ]
+    }
+  ];
+
+  var STATUS_LABEL = {good:"On track", warn:"At risk", bad:"Blocked"};
+  var PIPELINE = [
+    {l:"Meeting recorded", d:"Calendar + call recording"},
+    {l:"Transcript pulled", d:"Automatic, next morning"},
+    {l:"Summary extracted", d:"Action items, decisions, owners"},
+    {l:"Docs updated", d:"Structured project pages"},
+    {l:"Tickets synced", d:"Owners + due dates"},
+    {l:"Follow-ups scheduled", d:"Calendar holds for stakeholders"},
+    {l:"PM reviews & approves", d:"One click before anything ships"}
+  ];
+
+  function esc(s){ return (s||"").replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m];}); }
+
+  function renderPortfolio(){
+    var grid = document.getElementById("projGrid");
+    grid.innerHTML = PROJECTS.map(function(p){
+      return '<div class="proj" data-id="'+p.id+'">'+
+        '<div class="top"><div><div class="name">'+esc(p.name)+'</div><div class="owner">'+esc(p.owner)+'</div></div>'+
+        '<span class="pill '+p.status+'">'+STATUS_LABEL[p.status]+'</span></div>'+
+        '<div class="bar"><i style="width:'+p.progress+'%"></i></div>'+
+        '<div class="meta"><span>'+p.progress+'% complete</span><span>'+p.actions.filter(function(a){return !a.done}).length+' open actions</span></div>'+
+        '</div>';
+    }).join("");
+    grid.querySelectorAll(".proj").forEach(function(el){
+      el.addEventListener("click", function(){ openProject(el.dataset.id); });
+    });
+  }
+
+  function openProject(id){
+    var p = PROJECTS.filter(function(x){ return x.id===id; })[0];
+    if(!p) return;
+    document.getElementById("pTitle").textContent = p.name;
+    document.getElementById("pSub").textContent = p.owner + " · " + STATUS_LABEL[p.status] + " · " + p.progress + "% complete";
+    document.getElementById("pCharter").innerHTML =
+      '<p><b>Why —</b> '+esc(p.why)+'</p>'+
+      '<p><b>What —</b> '+esc(p.what)+'</p>'+
+      '<p><b>Metrics —</b> '+esc(p.metrics)+'</p>';
+    document.getElementById("pRasic").innerHTML =
+      '<tr><th>Role</th><th>Who</th><th>Note</th></tr>'+
+      p.rasic.map(function(r){ return '<tr><td><span class="role">'+r.role+'</span></td><td>'+esc(r.who)+'</td><td class="muted">'+esc(r.note)+'</td></tr>'; }).join("");
+    document.getElementById("pActions").innerHTML =
+      p.actions.map(function(a,i){ return '<div class="item'+(a.done?' done':'')+'" data-i="'+i+'">'+
+        '<div class="chk'+(a.done?' on':'')+'">'+(a.done?'✓':'')+'</div>'+
+        '<div><div class="t">'+esc(a.t)+'</div><div class="m">'+esc(a.who)+' · due '+esc(a.due)+'</div></div></div>'; }).join("") ||
+      '<p class="muted">No open action items.</p>';
+    document.getElementById("pActions").querySelectorAll(".item").forEach(function(el){
+      el.addEventListener("click", function(){
+        var a = p.actions[+el.dataset.i];
+        a.done = !a.done;
+        openProject(id);
+      });
+    });
+    document.getElementById("pFeed").innerHTML =
+      p.feed.map(function(f){ return '<div class="feed-item">'+
+        '<div class="fh"><span class="ft">'+esc(f.t)+'</span><span class="fd">'+esc(f.d)+'</span></div>'+
+        '<div class="fs">'+esc(f.s)+'</div>'+
+        (f.decision ? '<div class="decision">Decision: '+esc(f.decision)+'</div>' : '')+
+        '</div>'; }).join("");
+
+    document.getElementById("exportCsv").onclick = function(){ exportCsv(p); };
+    document.getElementById("exportBrief").onclick = function(){ exportBrief(p); };
+
+    show("project");
+  }
+
+  function exportCsv(p){
+    var rows = [["Task","Owner","Due","Done"]].concat(p.actions.map(function(a){ return [a.t, a.who, a.due, a.done ? "yes" : "no"]; }));
+    var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(","); }).join("\n");
+    var blob = new Blob([csv], {type:"text/csv"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = p.id+"-action-items.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function exportBrief(p){
+    var text = p.name+" — status: "+STATUS_LABEL[p.status]+" ("+p.progress+"% complete)\n\n"+
+      "Why: "+p.why+"\nWhat: "+p.what+"\n\nOpen action items:\n"+
+      p.actions.filter(function(a){return !a.done}).map(function(a){ return "- "+a.t+" ("+a.who+", due "+a.due+")"; }).join("\n");
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text).then(function(){ alert("Stakeholder brief copied to clipboard."); });
+    } else {
+      alert(text);
+    }
+  }
+
+  function renderPipeline(){
+    var row = document.getElementById("pipeRow");
+    row.innerHTML = PIPELINE.map(function(s,i){
+      return '<div class="step"><div class="n">'+(i+1)+'</div><div class="l">'+esc(s.l)+'</div><div class="d">'+esc(s.d)+'</div></div>'+
+        (i < PIPELINE.length-1 ? '<div class="arrow">→</div>' : '');
+    }).join("");
+  }
+
+  function show(view){
+    ["portfolio","project","pipeline"].forEach(function(v){
+      document.getElementById("view-"+v).classList.toggle("hidden", v!==view);
+    });
+    document.querySelectorAll("nav.tabs button").forEach(function(b){
+      b.classList.toggle("active", b.dataset.tab===view || (view==="project" && b.dataset.tab==="portfolio"));
+    });
+  }
+
+  document.querySelectorAll("nav.tabs button").forEach(function(b){
+    b.addEventListener("click", function(){ show(b.dataset.tab); });
+  });
+  document.getElementById("backBtn").addEventListener("click", function(){ show("portfolio"); });
+
+  renderPortfolio();
+  renderPipeline();
+})();
+</script>
+
+</body>
+</html>
