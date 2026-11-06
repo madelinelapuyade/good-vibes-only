@@ -2,7 +2,7 @@
 
 A concept demo for an AI-powered project-ops assistant: it turns meeting recordings into structured project updates — summaries, action items, decisions, and follow-ups — so a PM reviews instead of transcribes.
 
-🏆 **This concept won first place at an internal company hackathon.**
+🏆 **This concept won the Non technical category at an internal company hackathon.**
 
 **Note:** this is an original rebuild made for this portfolio. It's inspired by the general idea behind that hackathon project, but every line of code, all sample data, and the fictional company ("Northlight Robotics") were written from scratch specifically for public sharing — none of it reuses the original project's code, branding, or internal details.
 
